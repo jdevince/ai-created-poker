@@ -1,0 +1,43 @@
+<div class="player-container" [class.active]="isActive()" [class.folded]="player().isFolded"
+     [class.eliminated]="player().isEliminated" [class.is-dealer]="isDealer()">
+  @if (isDealer()) {
+    <div class="dealer-button">D</div>
+  }
+  @if (isSmallBlind()) {
+    <div class="blind-marker sb">SB</div>
+  }
+  @if (isBigBlind()) {
+    <div class="blind-marker bb">BB</div>
+  }
+
+  <div class="cards">
+    @for (card of player().holeCards; track $index) {
+      <app-card [card]="card" [faceUp]="player().isHuman || showCards()" />
+    }
+    @if (player().holeCards.length === 0 && !player().isEliminated) {
+      <div class="card-placeholder"></div>
+      <div class="card-placeholder"></div>
+    }
+  </div>
+
+  <div class="player-info">
+    <span class="player-name">{{ player().name }}</span>
+    <span class="player-chips">{{ player().chips | number }} chips</span>
+  </div>
+
+  @if (player().currentBet > 0) {
+    <div class="player-bet">
+      <span class="bet-amount">{{ player().currentBet }}</span>
+    </div>
+  }
+
+  @if (player().isAllIn) {
+    <div class="all-in-badge">ALL IN</div>
+  }
+
+  @if (lastAction()) {
+    <div class="last-action" [class]="'action-' + lastAction()">
+      {{ lastAction()! | uppercase }}
+    </div>
+  }
+</div>

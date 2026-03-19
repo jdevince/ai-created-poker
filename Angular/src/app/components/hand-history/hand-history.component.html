@@ -1,0 +1,24 @@
+<div class="hand-history" [class.collapsed]="collapsed">
+  <button class="toggle-btn" (click)="collapsed = !collapsed">
+    {{ collapsed ? '◀ History' : '▶ Hide' }}
+  </button>
+  @if (!collapsed) {
+    <div class="history-content">
+      <h3>Hand History</h3>
+      <div class="history-list">
+        @for (entry of history(); track $index) {
+          <div class="history-entry" [class]="'action-' + entry.action">
+            <span class="entry-player">{{ entry.playerName }}</span>
+            <span class="entry-action">{{ entry.action | uppercase }}</span>
+            @if (entry.amount) {
+              <span class="entry-amount">{{ entry.amount }}</span>
+            }
+          </div>
+        }
+        @empty {
+          <div class="no-history">No actions yet</div>
+        }
+      </div>
+    </div>
+  }
+</div>

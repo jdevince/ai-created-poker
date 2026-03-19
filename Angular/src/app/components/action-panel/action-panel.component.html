@@ -1,0 +1,51 @@
+@if (visible()) {
+  <div class="action-panel">
+    <div class="action-buttons">
+      @for (action of validActions(); track action.action) {
+        @if (action.action === 'fold') {
+          <button class="btn btn-fold" (click)="onAction('fold')">Fold</button>
+        }
+        @if (action.action === 'check') {
+          <button class="btn btn-check" (click)="onAction('check')">Check</button>
+        }
+        @if (action.action === 'call') {
+          <button class="btn btn-call" (click)="onAction('call')">
+            Call {{ action.minAmount }}
+          </button>
+        }
+        @if (action.action === 'raise') {
+          <button class="btn btn-raise" (click)="onAction('raise', raiseAmount())">
+            Raise to {{ raiseAmount() }}
+          </button>
+        }
+        @if (action.action === 'all-in') {
+          <button class="btn btn-allin" (click)="onAction('all-in')">
+            All In ({{ action.minAmount }})
+          </button>
+        }
+      }
+    </div>
+
+    @if (raiseAction()) {
+      <div class="raise-controls">
+        <input type="range"
+               [min]="raiseAction()!.minAmount!"
+               [max]="raiseAction()!.maxAmount!"
+               [ngModel]="raiseAmount()"
+               (ngModelChange)="raiseAmount.set($event)"
+               class="raise-slider" />
+        <input type="number"
+               [min]="raiseAction()!.minAmount!"
+               [max]="raiseAction()!.maxAmount!"
+               [ngModel]="raiseAmount()"
+               (ngModelChange)="raiseAmount.set($event)"
+               class="raise-input" />
+        <div class="preset-buttons">
+          <button class="btn-preset" (click)="setRaisePreset(0.5)">½ Pot</button>
+          <button class="btn-preset" (click)="setRaisePreset(0.75)">¾ Pot</button>
+          <button class="btn-preset" (click)="setRaisePreset(1)">Pot</button>
+        </div>
+      </div>
+    }
+  </div>
+}

@@ -1,0 +1,91 @@
+<div class="game-wrapper">
+  @if (gameState().phase === 'waiting') {
+    <div class="start-screen">
+      <h1>Texas Hold 'Em</h1>
+      <p>9-Player No-Limit Hold 'Em</p>
+      <button class="btn-start" (click)="startGame()">Deal Me In</button>
+    </div>
+  } @else {
+    <div class="table-area">
+      <div class="table-felt">
+        <!-- Pot -->
+        <div class="pot-display">
+          <span class="pot-label">POT</span>
+          <span class="pot-amount">{{ gameState().pot | number }}</span>
+        </div>
+
+        <!-- Community Cards -->
+        <div class="community-cards">
+          @for (card of gameState().communityCards; track $index) {
+            <div class="community-card-wrapper" [style.animation-delay]="$index * 150 + 'ms'">
+              <app-card [card]="card" [faceUp]="true" />
+            </div>
+          }
+          @for (_ of emptySlots(); track $index) {
+            <div class="community-card-placeholder"></div>
+          }
+        </div>
+
+        <!-- Phase indicator -->
+        <div class="phase-indicator">{{ phaseLabel() }}</div>
+      </div>
+
+      <!-- Players positioned around the table -->
+      @for (player of gameState().players; track player.id; let i = $index) {
+        <div class="player-seat" [style.top]="seatPositions[i].top"
+             [style.left]="seatPositions[i].left"
+             [style.transform]="seatPositions[i].transform">
+          <app-player
+            [player]="player"
+            [isActive]="i === gameState().currentPlayerIndex"
+            [isDealer]="i === gameState().dealerIndex"
+            [isSmallBlind]="i === smallBlindIndex()"
+            [isBigBlind]="i === bigBlindIndex()"
+            [showCards]="showAllCards()"
+            [lastAction]="getLastAction(player.id)"
+          />
+        </div>
+      }
+    </div>
+
+    <!-- Action Panel -->
+    <div class="action-panel-wrapper">
+      @if (isHumanTurn()) {
+        <app-action-panel
+          [validActions]="validActions()"
+          [visible]="true"
+          [potSize]="gameState().pot"
+          (actionSelected)="onPlayerAction($event)"
+        />
+      }
+
+      @if (gameState().phase === 'hand-complete') {
+        <div class="hand-result">
+          @for (winner of gameState().winners; track winner.playerId) {
+            <div class="winner-info">
+              <span class="winner-name">{{ getPlayerName(winner.playerId) }}</span>
+              wins {{ winner.amount | number }} chips
+              @if (winner.handDescription !== 'Last player standing') {
+                <span class="winner-hand">with {{ winner.handDescription }}</span>
+              }
+            </div>
+          }
+          <button class="btn-continue" (click)="continueGame()">
+            Next Hand
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Hand History -->
+    <app-hand-history [history]="gameState().handHistory" />
+
+    <!-- Game Over -->
+    @if (gameState().phase === 'game-over') {
+      <app-game-over
+        [winner]="gameWinner()"
+        (newGame)="startGame()"
+      />
+    }
+  }
+</div>

@@ -1,0 +1,10 @@
+@if (faceUp()) {
+  <div class="card" [class.red]="isRed()">
+    <span class="card-rank">{{ rankLabel() }}</span>
+    <span class="card-suit">{{ suitSymbol() }}</span>
+  </div>
+} @else {
+  <div class="card card-back">
+    <span class="card-back-design">♠♥♦♣</span>
+  </div>
+}

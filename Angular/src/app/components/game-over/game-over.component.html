@@ -1,0 +1,14 @@
+<div class="game-over-overlay">
+  <div class="game-over-modal">
+    <h1>Game Over</h1>
+    @if (winner()?.isHuman) {
+      <p class="win-message">Congratulations! You won!</p>
+    } @else {
+      <p class="lose-message">{{ winner()?.name }} wins the game!</p>
+    }
+    @if (winner()) {
+      <p class="chips-info">Final chips: {{ winner()!.chips | number }}</p>
+    }
+    <button class="btn-new-game" (click)="newGame.emit()">New Game</button>
+  </div>
+</div>
