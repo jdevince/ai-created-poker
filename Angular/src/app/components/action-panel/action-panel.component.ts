@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed } from '@angular/core';
+import { Component, input, output, signal, computed, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActionType } from '../../models/game-state.model';
 
@@ -176,13 +176,17 @@ export class ActionPanelComponent {
   raiseAmount = signal(0);
 
   raiseAction = computed(() => {
-    const actions = this.validActions();
-    const raise = actions.find((a) => a.action === 'raise');
-    if (raise && this.raiseAmount() < raise.minAmount!) {
-      this.raiseAmount.set(raise.minAmount!);
-    }
-    return raise ?? null;
+    return this.validActions().find((a) => a.action === 'raise') ?? null;
   });
+
+  constructor() {
+    effect(() => {
+      const raise = this.raiseAction();
+      if (raise && this.raiseAmount() < raise.minAmount!) {
+        this.raiseAmount.set(raise.minAmount!);
+      }
+    });
+  }
 
   onAction(action: ActionType, amount?: number): void {
     this.actionSelected.emit({ action, amount });
