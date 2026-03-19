@@ -1,0 +1,90 @@
+import { Component, input, computed } from '@angular/core';
+import { Card, SUIT_SYMBOLS, RANK_LABELS, isRedSuit } from '../../models/card.model';
+
+@Component({
+  selector: 'app-card',
+  standalone: true,
+  template: `
+    @if (faceUp()) {
+      <div class="card" [class.red]="isRed()">
+        <span class="card-rank">{{ rankLabel() }}</span>
+        <span class="card-suit">{{ suitSymbol() }}</span>
+      </div>
+    } @else {
+      <div class="card card-back">
+        <span class="card-back-design">♠♥♦♣</span>
+      </div>
+    }
+  `,
+  styles: [`
+    .card {
+      width: 50px;
+      height: 72px;
+      background: white;
+      border-radius: 6px;
+      border: 1.5px solid #bbb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Georgia', serif;
+      box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3);
+      color: #1a1a1a;
+      position: relative;
+      user-select: none;
+      transition: transform 0.4s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .card.red {
+      color: #d32f2f;
+    }
+
+    .card-rank {
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .card-suit {
+      font-size: 20px;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .card-back {
+      background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #1a237e 100%);
+      border-color: #0d1b4a;
+      color: rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-back-design {
+      font-size: 12px;
+      letter-spacing: 2px;
+      word-break: break-all;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .card.highlight {
+      box-shadow: 0 0 10px 3px rgba(255, 215, 0, 0.7);
+      border-color: gold;
+    }
+  `],
+})
+export class CardComponent {
+  card = input.required<Card>();
+  faceUp = input<boolean>(true);
+  highlight = input<boolean>(false);
+
+  rankLabel = computed(() => RANK_LABELS[this.card().rank]);
+  suitSymbol = computed(() => SUIT_SYMBOLS[this.card().suit]);
+  isRed = computed(() => isRedSuit(this.card().suit));
+}
