@@ -1,0 +1,184 @@
+# Texas Hold 'Em Poker — Angular Application Build Prompt
+
+Build a fully playable Texas Hold 'Em poker game as an Angular single-page application. The game should support a single human player against AI opponents at a table, with standard poker rules, animated card dealing, and a polished UI.
+
+---
+
+## 1. Project Setup
+
+- Create a new Angular project inside the `Angular/` directory using the Angular CLI (`ng new poker --directory . --routing --style=scss --ssr=false`).
+- Use Angular 21+ standalone components (no NgModules).
+- Use strict TypeScript throughout.
+- Do NOT add any backend or server — all game logic runs client-side.
+
+---
+
+## 2. Core Game Rules & Flow
+
+Implement the full Texas Hold 'Em ruleset:
+
+### 2.1 Table & Players
+- 1 human player + 8 AI opponents (9-player table).
+- Each player starts with a 1,000 chip stack.
+- A dealer button rotates clockwise each hand.
+- The small blind of 10 chips is posted automatically by the player to the left of the dealer. The big blind of 20 chips is posted automatically by the player to the left of the small blind player.
+
+### 2.2 Hand Phases
+Implement each phase in order:
+
+1. **Pre-flop** — Each player is dealt 2 hole cards face-down. Betting round starts with the player to the left of the big blind.
+2. **Flop** — 3 community cards are dealt face-up. Betting round starts with the first active player to the left of the dealer.
+3. **Turn** — 1 community card is dealt face-up. Betting round.
+4. **River** — 1 community card is dealt face-up. Final betting round.
+5. **Showdown** — Remaining players reveal hands. Best 5-card hand from the 7 available cards wins the pot.
+
+### 2.3 Betting Actions
+Each player may take one of the following actions on their turn:
+- **Fold** — Forfeit the hand.
+- **Check** — Pass action (only if no bet to call).
+- **Call** — Match the current bet.
+- **Raise** — Increase the bet. Minimum raise equals the size of the previous raise (or the big blind if no prior raise). Allow the player to choose an amount via a slider or input.
+- **All-in** — Bet all remaining chips.
+
+### 2.4 Pot Management
+- Track the main pot and any side pots created when a player goes all-in.
+- At showdown, distribute pots correctly — a player can only win from each opponent the amount they themselves put in.
+
+### 2.5 Hand Evaluation
+- Evaluate the best 5-card hand from each player's 2 hole cards + 5 community cards.
+- Rank hands in standard order: Royal Flush > Straight Flush > Four of a Kind > Full House > Flush > Straight > Three of a Kind > Two Pair > One Pair > High Card.
+- Handle tie-breaking with kickers.
+- Handle split pots when hands are exactly equal.
+
+### 2.6 Game Continuation
+- After each hand, eliminate any player with 0 chips.
+- The game ends when only one player remains (winner) or the human is eliminated.
+- Provide a "New Game" button to restart.
+
+---
+
+## 3. AI Opponents
+
+Implement AI opponents that consider:
+- Hand strength (pre-flop hand rankings, post-flop made hands and draws).
+- Position at the table.
+- Pot odds vs. hand equity.
+- Stack sizes.
+- A randomized element so behavior isn't perfectly predictable.
+
+Add a short delay (0.5–1.5s) before each AI action so the game feels natural.
+
+---
+
+## 4. UI / UX Design
+
+### 4.1 Table Layout
+- Render an oval/rounded poker table in the center of the screen.
+- Position all 9 players around the table with their name, chip count, and cards visible.
+- The human player should always be at the bottom-center.
+- Show the dealer button, small blind, and big blind markers.
+
+### 4.2 Cards
+- Render playing cards with proper suit symbols (♠ ♥ ♦ ♣) and colors (black for spades/clubs, red for hearts/diamonds).
+- The human player's hole cards are face-up; AI hole cards are face-down (shown as card backs) until showdown.
+- Community cards appear in the center of the table.
+- Animate card dealing (cards slide from a deck position to each player).
+
+### 4.3 Action Panel
+- Display action buttons (Fold, Check, Call, Raise, All-In) at the bottom of the screen when it's the human player's turn.
+- Only show valid actions (e.g., don't show "Check" if there's a bet to call).
+- For Raise, show a slider with min/max values and an input field for an exact amount.
+- Hide the panel when it's not the human player's turn.
+
+### 4.4 Game Information
+- Display the current pot size prominently in the center of the table.
+- Show each player's current bet in front of them for the current round.
+- Indicate the active player with a highlight or glow.
+- Display a hand history log (collapsible sidebar or panel) showing actions taken in the current hand.
+
+### 4.5 Showdown
+- At showdown, reveal AI hole cards with an animation (flip).
+- Highlight the winning hand's cards.
+- Display the hand rank (e.g., "Full House, Kings over Threes").
+- Animate chips moving to the winning player.
+
+### 4.6 Visual Polish
+- Use a green felt / dark green gradient for the table surface.
+- Dark background behind the table (dark gray or deep blue).
+- Clean, modern typography.
+- Use CSS transitions/animations for card dealing, chip movements, and player actions.
+- The game should be responsive and work on desktop screens (minimum 1024px wide). Mobile is nice-to-have but not required.
+
+---
+
+## 5. Application Architecture
+
+### 5.1 State Management
+- Use Angular signals or a lightweight state management approach (no NgRx needed for this scope).
+- Maintain a clear game state model:
+  ```
+  GameState {
+    players: Player[]
+    communityCards: Card[]
+    pot: number
+    sidePots: SidePot[]
+    dealerIndex: number
+    currentPlayerIndex: number
+    phase: 'pre-flop' | 'flop' | 'turn' | 'river' | 'showdown'
+    currentBet: number
+    blinds: { small: number, big: number }
+  }
+  ```
+
+### 5.2 Key Services
+- **DeckService** — Shuffle and deal cards.
+- **HandEvaluatorService** — Evaluate and rank 5-card hands from 7 cards.
+- **GameEngineService** — Orchestrate the game loop, betting rounds, phase transitions, pot calculations.
+- **AIService** — Make AI decisions based on game state and player personality.
+
+### 5.3 Key Components
+- **TableComponent** — Main game view rendering the table, players, and community cards.
+- **PlayerComponent** — Render a single player (name, chips, cards, bet, status).
+- **CardComponent** — Render a single playing card (face-up or face-down).
+- **ActionPanelComponent** — Betting action buttons and raise slider for the human player.
+- **HandHistoryComponent** — Log of actions in the current hand.
+- **GameOverComponent** — Displayed when the game ends.
+
+### 5.4 Models
+- **Card** — `{ rank: Rank, suit: Suit }`
+- **Player** — `{ id, name, chips, holeCards, currentBet, isFolded, isAllIn, isDealer, isHuman, aiProfile }`
+- **HandResult** — `{ rank: HandRank, cards: Card[], description: string }`
+
+---
+
+## 6. Testing
+
+- Write unit tests for the **HandEvaluatorService** covering all hand ranks, kicker comparisons, and tie scenarios.
+- Write unit tests for the **GameEngineService** covering pot calculations, side pot creation, betting round flow, and phase transitions.
+- Ensure all tests pass before considering the build complete.
+
+---
+
+## 7. Build Order
+
+Implement in this order, getting each step working before moving on:
+
+1. **Models & Card/Deck logic** — Card, Deck, shuffle, deal.
+2. **Hand Evaluator** — Full hand evaluation with tests.
+3. **Game Engine** — Game loop, betting rounds, pot management with tests.
+4. **Basic UI** — Table, players, cards rendered (no interaction yet).
+5. **Human Player Actions** — Wire up action panel to game engine.
+6. **AI Players** — Implement AI decision-making.
+7. **Animations & Polish** — Card dealing, chip movement, showdown animations.
+8. **Game flow** — Player elimination, game over, new game.
+
+---
+
+## 8. Constraints & Guidelines
+
+- **No external game libraries or engines** — build the poker logic from scratch.
+- **No backend / no database** — everything is client-side.
+- **No images for cards** — render cards with HTML/CSS using suit symbols and colors.
+- Keep the code clean, well-organized, and well-typed. Use TypeScript enums or union types for Rank, Suit, HandRank, Phase, and AIProfile.
+- Each service should be independently testable.
+- Commit after each major milestone (each step in the build order).
