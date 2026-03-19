@@ -44,6 +44,7 @@ export class TableComponent implements OnInit {
   ];
 
   private lastActions = signal<Map<number, string>>(new Map());
+  private previousPhase: string = 'waiting';
 
   gameState = computed(() => this.engine.gameState());
   isHumanTurn = computed(() => this.engine.isHumanTurn());
@@ -79,6 +80,14 @@ export class TableComponent implements OnInit {
     const players = this.gameState().players;
     const alive = players.filter((p) => !p.isEliminated);
     return alive.length === 1 ? alive[0] : null;
+  });
+
+  private phaseResetEffect = effect(() => {
+    const phase = this.gameState().phase;
+    if (phase !== this.previousPhase) {
+      this.previousPhase = phase;
+      this.lastActions.set(new Map());
+    }
   });
 
   private aiActionEffect = effect(() => {
