@@ -421,7 +421,7 @@ export class TableComponent implements OnInit {
     if (this.aiActionPending) return;
     this.aiActionPending = true;
 
-    const delay = 600 + Math.random() * 900; // 0.6-1.5s delay
+    const delay = 3000 + Math.random() * 2000; // 3-5s delay
     setTimeout(() => {
       this.aiActionPending = false;
       const state = this.engine.gameState();
