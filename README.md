@@ -2,11 +2,9 @@
 
 A fully playable Texas Hold 'Em poker game built as a personal project to explore building software with [Claude Code](https://claude.ai/claude-code). The entire application — game logic, AI opponents, UI, and animations — was developed through collaboration with Claude.
 
-## Screenshots
+## Demo
 
-![Poker table mid-hand](screenshots/table.png)
-
-![Showdown with winning hand highlighted](screenshots/showdown.png)
+<video src="screenshots/gameplay.mp4" autoplay loop muted playsinline></video>
 
 ## About the Project
 
