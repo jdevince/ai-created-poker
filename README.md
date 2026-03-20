@@ -4,7 +4,7 @@ A fully playable Texas Hold 'Em poker game built as a personal project to explor
 
 ## Demo
 
-<video src="screenshots/gameplay.mp4" autoplay loop muted playsinline></video>
+https://github.com/user-attachments/assets/738bfb7e-3444-4405-a127-4098a49fca44
 
 ## About the Project
 
